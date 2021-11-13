@@ -1,38 +1,6 @@
-pub type AdapterResult<T> = Result<T, Box<dyn std::error::Error>>;
-
-#[cfg(feature = "fmt-env")]
-mod aenv;
-#[cfg(feature = "fmt-json")]
-mod ajson;
-#[cfg(feature = "fmt-javaproperties")]
-mod aprop;
-#[cfg(feature = "fmt-toml")]
-mod atoml;
-#[cfg(feature = "fmt-yaml")]
-mod ayaml;
-
-#[cfg(feature = "fmt-env")]
-pub use aenv::*;
-#[cfg(feature = "fmt-json")]
-pub use ajson::*;
-#[cfg(feature = "fmt-javaproperties")]
-pub use aprop::*;
-#[cfg(feature = "fmt-toml")]
-pub use atoml::*;
-#[cfg(feature = "fmt-yaml")]
-pub use ayaml::*;
-
-/// ConfigAdapter mediates from varius config format and Viperus
-pub trait ConfigAdapter {
-    /// parse create he interna rappresentation of the config file/mode
-    fn parse(&mut self) -> AdapterResult<()>;
-    /// get_map returns a key value map rappresentation of the actaul config
-    fn get_map(&self) -> crate::map::Map;
-}
-
 #[cfg(test)]
 mod tests {
-    use super::*;
+    pub use viperus::adapter::*;
 
     fn init() {
         let _ = env_logger::builder().is_test(true).try_init();
@@ -49,7 +17,7 @@ mod tests {
 
         let map = a.get_map();
         let jtrue = map.get::<bool>("json").unwrap();
-        assert_eq!(jtrue, true);
+        assert!(jtrue, "{}", true);
     }
 
     #[test]
@@ -63,7 +31,7 @@ mod tests {
 
         let map = a.get_map();
         let jtrue = map.get::<bool>("yaml").unwrap();
-        assert_eq!(jtrue, true);
+        assert!(jtrue,"{}", true);
     }
 
     #[test]
@@ -78,7 +46,7 @@ mod tests {
 
         let map = a.get_map();
         let jtrue = map.get::<bool>("level1.key1").unwrap();
-        assert_eq!(jtrue, true);
+        assert!(jtrue, "{}", true);
 
         let ji32 = map.get::<i32>("level1.keyi32").unwrap();
         assert_eq!(ji32, 42);

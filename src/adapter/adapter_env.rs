@@ -2,10 +2,10 @@ use super::*;
 use std::path::Path;
 use std::path::PathBuf;
 
-/// EnvAdapter map a DotEnv file in a linear multilevel key/value array
+/// Maps a DotEnv file into a linear assigned multilevel key/value array.
 ///
-/// the adaptor could be consumed by Viperous
-/// internally uses dotenv crate
+/// Viperus will make use of the adaptor, by opting in the feature `"fmt-env"`,
+/// which will consume the `dotenv` crate internally.
 pub struct EnvAdapter {
     data: std::collections::HashMap<String, String>,
     real_path: PathBuf,

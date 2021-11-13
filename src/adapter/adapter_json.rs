@@ -1,9 +1,9 @@
 use super::*;
 
-/// JsonAdapter map a Json file in a linear multilevel key/value array
+/// Maps a json file into a linear assigned multilevel key/value array
 ///
-/// the adaptor could be consumed by Viperous
-/// internally use serde_json crate
+/// Viperus will make use of the adaptor, by opting in the feature `"fmt-json"`,
+/// which will consume the `serde_json` crate internally.
 pub struct JsonAdapter {
     source: String,
     data: serde_json::Map<String, serde_json::Value>,

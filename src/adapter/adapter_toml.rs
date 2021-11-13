@@ -1,10 +1,9 @@
 use super::*;
-use toml;
 
-/// TomlAdapter map a Toml file in a linear multilevel key/value array
+/// Maps a toml file into a linear assigned multilevel key/value array
 ///
-/// the adaptor could be consumed by Viperous
-/// internally it uses toml crate
+/// Viperus will make use of the adaptor, by opting in the feature `"fmt-toml"`,
+/// which will consume the `serde_json` crate internally.
 pub struct TomlAdapter {
     source: String,
     data: toml::map::Map<String, toml::Value>,
