@@ -1,6 +1,6 @@
-//! all the stuff that create a global instance of viperus
+//! A reference counted global `VIPERUS` instance.
 //!
-//! the instance is "lazy_static" and proteced by a mutex
+//! The instance is "lazy_static" and proteced by a mutex.
 
 use super::*;
 use std::sync::mpsc::channel;
@@ -14,13 +14,13 @@ use std::sync::Mutex;
 
 #[cfg(feature = "global")]
 lazy_static! {
-    /// the global instance
+    /// A mutex guarded reference countner to a static `VIPERUS` instance
     static ref VIPERUS: Arc::<Mutex::<Viperus<'static>>> = Arc::new(Mutex::new(Viperus::new()));
 }
 
 /// Watch the config files and autoreload in case of change
 ///
-/// the function starts a separate thread
+/// The function starts a separate thread.
 /// TODO ad an unwatch_all() function;
 #[cfg(feature = "watch")]
 pub fn watch_all() -> Result<(), Box<dyn Error>> {
@@ -36,8 +36,7 @@ pub fn watch_all() -> Result<(), Box<dyn Error>> {
         let mut watcher: notify::RecommendedWatcher =
             notify::Watcher::new(tx, Duration::from_secs(2)).unwrap();
 
-        // Add a path to be watched. All files and directories at that path and
-
+        // Add a watch path. All files and directories are checked.
         for f in lf {
             watcher
                 .watch(f, notify::RecursiveMode::NonRecursive)
@@ -60,19 +59,20 @@ pub fn watch_all() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-/// load_file load a config file in the global instance
+/// Loads a config file into the global instance.
 pub fn load_file(name: &str, format: Format) -> Result<(), Box<dyn Error>> {
     VIPERUS.lock().unwrap().load_file(name, format)
 }
 
-/// load_adapter ask the adapter to parse her data and merges result map in the internal configurtion map of global instance
+/// Ask the adapter to parse its data and merge the result map into
+/// the internal configuration map of the global instance.
 pub fn load_adapter(adt: &mut dyn adapter::ConfigAdapter) -> Result<(), Box<dyn Error>> {
     VIPERUS.lock().unwrap().load_adapter(adt)
 }
 
-/// add an override value to the cofiguration
+/// Add an override value to the configuration map.
 ///
-/// key is structured in components separated by a "."
+/// The keys are structured as components, separated by a "."
 pub fn add<T>(key: &str, value: T) -> Option<T>
 where
     map::ViperusValue: From<T>,
@@ -81,7 +81,10 @@ where
     VIPERUS.lock().unwrap().add(key, value)
 }
 
-/// get a configuration value of type T from global configuration in this order
+/// Get a configuration value of type `T` from the global configuration.
+///
+/// Parsing will respect the following order:
+///
 /// * overrided key
 /// * clap parameters
 /// * config adapter sourced values
@@ -97,9 +100,9 @@ where
     VIPERUS.lock().unwrap().get(key)
 }
 
-/// add an default value to the global cofiguration
+/// Add an default value to the global configuration.
 ///
-/// key is structured in components separated by a "."
+/// The keys are structured as components, separated by a "."
 pub fn add_default<T>(key: &str, value: T) -> Option<T>
 where
     map::ViperusValue: From<T>,
@@ -108,38 +111,42 @@ where
     VIPERUS.lock().unwrap().add_default(key, value)
 }
 
-///load_clap  brings in  the clap magic
+/// Incoprorate the clap magic.
+///
+/// This requires the opt-in of feature `fmt-clap` thas consumes the `clap` crate.
 #[cfg(feature = "fmt-clap")]
 pub fn load_clap(matches: clap::ArgMatches<'static>) -> Result<(), Box<dyn Error>> {
     VIPERUS.lock().unwrap().load_clap(matches)
 }
 
-/// bond a clap argsument to a config key
+/// Bond a clap argument to a config key.
 #[cfg(feature = "fmt-clap")]
 pub fn bond_clap(src: &str, dst: &str) -> Option<String> {
     VIPERUS.lock().unwrap().bond_clap(src, dst)
 }
 
-/// reload the configuration files
+/// Reload the configuration files.
 pub fn reload() -> Result<(), Box<dyn Error>> {
     VIPERUS.lock().unwrap().reload()
 }
 
-/// cache the query results for small configs speedup is x4
-///from v 0.1.9 returns the previus state , useful for test setups.
+/// Cache the query results (gain a x4 speedup for small config files).
+///
+/// since v0.1.9: returns the previus state , useful for test setups.
 #[cfg(feature = "cache")]
 pub fn cache(enable: bool) -> bool {
     VIPERUS.lock().unwrap().cache(enable)
 }
 
-/// whan enabled viperus will check for an environment variable any time Get request is made
-/// checking  for a environment variable with a name matching the key uppercased and prefixed with the
-/// env_prefix if set.
+/// Enables the automatic probe of an environment variable.
+///
+/// `Get`-calls will issue the reload of the given environment variable that matches the uppercase key name.
+/// If `env_prefix` is enables, the given prefix will be prepended to the key name.
 pub fn automatic_env(enable: bool) {
     VIPERUS.lock().unwrap().automatic_env(enable)
 }
 
-/// prepend 'pefix' when quering envirment variables
+/// Prepend the `prefix` to given key name when probing environment variables.
 pub fn set_env_prefix(prefix: &str) {
     VIPERUS.lock().unwrap().set_env_prefix(prefix)
 }

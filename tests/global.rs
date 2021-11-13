@@ -2,7 +2,6 @@
 extern crate log;
 #[cfg(feature = "clap")]
 extern crate clap;
-extern crate viperus;
 
 #[cfg(feature = "clap")]
 use clap::{App, Arg, SubCommand};
