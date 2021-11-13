@@ -75,8 +75,8 @@ impl From<&str> for ViperusValue {
 impl Into<bool> for &ViperusValue {
     fn into(self) -> bool {
         match self {
-        ViperusValue::BOOL(i) => *i,
-        ViperusValue::Str(s) => s.parse().expect("not a bool"),
+            ViperusValue::BOOL(i) => *i,
+            ViperusValue::Str(s) => s.parse().expect("not a bool"),
             _ => panic!("not a bool"),
         }
     }
@@ -85,8 +85,8 @@ impl Into<bool> for &ViperusValue {
 impl Into<bool> for ViperusValue {
     fn into(self) -> bool {
         match self {
-        ViperusValue::BOOL(i) => i,
-        ViperusValue::Str(s) => s.parse().expect("not a bool"),
+            ViperusValue::BOOL(i) => i,
+            ViperusValue::Str(s) => s.parse().expect("not a bool"),
 
             _ => panic!("not a bool {:?}", self),
         }
@@ -116,27 +116,27 @@ impl Into<i32> for &ViperusValue {
 
 impl<'a> Into<&'a str> for &'a ViperusValue {
     fn into(self) -> &'a str {
-        match self { 
+         match self {
         ViperusValue::Str(i) => i,
             _ => panic!("not an str"),
-        }
-    }
+         }
+     }
  }
 
 impl<'a> Into<String> for &'a ViperusValue {
     fn into(self) -> String {
-        match self {
+         match self {
         ViperusValue::Str(i) => i.clone(),
             _ => panic!("not an str"),
-        }
-    }
+         }
+     }
  }
 
 impl Into<String> for ViperusValue {
     fn into(self) -> String {
-        match self  {
+         match self {
         ViperusValue::Str(i) => i,
             _ => panic!("not a string"),
-        }
+         }
     }
 }

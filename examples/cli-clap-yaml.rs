@@ -39,15 +39,15 @@ fn main() {
     #[cfg(feature = "fmt-yaml")]
     {
         println!("Feature: `fmt-yml`, parsing ...");
-    viperus::load_file(&path!("examples", "example.yaml"), viperus::Format::YAML).unwrap();
+        viperus::load_file(&path!("examples", "example.yaml"), viperus::Format::YAML).unwrap();
 
         println!("Parsed parameters:");
         println!(" - config: {}",
                  viperus::get::<String>("config.file").unwrap()
         );
         println!(" - url: {}",
-        viperus::get::<String>("service.url").unwrap()
-    );
+                 viperus::get::<String>("service.url").unwrap()
+        );
     }
 }
 
