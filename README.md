@@ -1,9 +1,14 @@
 # viperus  [![Build Status](https://travis-ci.com/maurocordioli/viperus.svg?branch=master)](https://travis-ci.com/maurocordioli/viperus) [![Coverage Status](https://coveralls.io/repos/github/maurocordioli/viperus/badge.svg?branch=master)](https://coveralls.io/github/maurocordioli/viperus?branch=master)
  ~~go~~  rust configuration with fangs!
 
-`viperus` is an (in)complete commandline configuration solution for Rust applications.
-It is heavly inspired by the wonderful go package <https://github.com/spf13/viper>
-Use it at your own risk. ;-)
+`viperus` is a commandline configuration solution for Rust applications.
+
+> Note: The implementation is yet incomplete. It should work, but
+> please be aware of this fact and use at your own risk. ;-)
+
+`viperus` is heavly inspired by the wonderful go package
+<https://github.com/spf13/viper> and adopt the ideas to make them
+accessible in the rust world.
 
 no Go projects ~~has been harmed~~ are built consuming `viperus` :-)
 
@@ -19,17 +24,18 @@ no Go projects ~~has been harmed~~ are built consuming `viperus` :-)
 * 0.1.0  first release
 
 ## What is viperus?
-Viperus is a package, that enables program configuration via an extendable
-types system. Parameters can be incoprorated via cli parameters, environment
+Viperus is a crate, that enables program configuration via an extendable
+types system. Parameters can be incorporated via cli parameters or environment
 viariables. Parameters may be declared in configuration files as well.
 
 Given implementation can handle:
 
-* setting defaults
-* reading from config files. Given formats are parsed:
-  Dotenv, java-properties, JSON, TOML, YAML
-* reading from environment variables
-* reading from Clap command line flags
+* inlined default settings
+* reading Environment variables
+* reading DotEnv files
+* reading Java-propertie files
+* reading JSON, TOML or YAML config files
+* reading Clap command line flags
 * setting explicit values
 * reload of all files
 * watch config files and reload, if any source value changes in first place
@@ -88,8 +94,9 @@ viperus::cache(true);
 let ok=viperus::get::<bool>("TEST_BOOL").unwrap();
 ```
 
-** Sidenote:  Yes I konw globals are evil. Inspiration was taken form the go package `viper` that is taking this route ....
-If you dislike globals, or other preset defaults, go ahead and opt-out like this:
+> Note: Yes I konw globals are evil. Inspiration was taken form
+> the go package `viper` that is taking this route ....  If you dislike
+> globals, or other preset defaults, go ahead and opt-out like this:
 
 ```cargo
 cargo build --release --no-default-features --features "cache, fmt-clap, fmt-env, fmt-javaproperties, fmt-yaml, fmt-toml, notify, watch"
@@ -119,7 +126,7 @@ The crate may be adopted using cargo's "feature" semantic. The default enables a
 
 *  feature = "fmt-[format]" with [format] in 'clap, env, javaproperties, json, toml, yaml' enabling the relative format
 *  feature = "global" enabling the global tread safe configuration
-*  feature = "watch" enabling the automatic file reload ( prerequisite: feature=global)
+*  feature = "watch" enabling the automatic file reload (prerequisite: feature=global)
 *  feature = "cache" enabling caching
 
 single featues could be activated in a selective way  via cargo.toml
@@ -145,7 +152,8 @@ cargo test
 
 ## Examples
 
-Inside the example subdirectory there is a reference implementation that consumes a yaml configuration file.
+Inside the example subdirectory there is a reference implementation
+that consumes a yaml configuration file.
 
 Compile and execute it like this:
 
