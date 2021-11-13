@@ -1,23 +1,62 @@
-//! viperus is an (in)complete configuration solution for Rust applications.
+//! `viperus` is a commandline configuration solution for Rust applications.
 //!
-//! I have already said that it is incomplete?
-//! use at your own risk. ;-)
-//! viperus handle some types of configuration needs and formats.
-//!* setting defaults
-//! * reading from JSON, TOML, YAML, dotenv file ,java properties config files
-//! * reading from environment variables
-//! * reading from Clap command line flags
-//! * setting explicit values
-//! * reload of all files
-//! * whatch config files and reolad all in something changes
-//! * caching
-//! Viperus uses the following decreasing precedence order.
-//! * explicit call to `add`
-//! * clap flag
-//! * config
-//! * env variables
-//! * default
+//! > Note: The implementation is yet **incomplete**. It should work, but
+//! > please be aware of this fact and use at your own risk. ;-)
 //!
+//! The crate enables program configuration via an
+//! extendable types system. Parameters can be incoprorated via cli
+//! parameters or environment viariables. Parameters may be declared in
+//! configuration files as well.
+//!
+//! The given implementation will incorporate configuration parameters
+//! that are given via the following input methods:
+//!
+//! * inlined default settings
+//! * reading Environment variables
+//! * reading DotEnv files
+//! * reading Java-propertie files
+//! * reading JSON, TOML or YAML config files
+//! * reading Clap command line flags
+//!
+//! Structure elements in a static instance of `viperus` may be
+//! manipulated via the following shadow functions:
+//!
+//! * add
+//! * get
+//! * load_clap
+//! * load_file
+//!
+//! You may reload the config files manually or take advantage of the
+//! `watch` feature. `viperus` will react on any changes of given
+//! values inside the files.
+//!
+//! # Argument precedence
+//!
+//! `viperus` uses the following decreasing precedence order, when it parses the available config parameters:
+//!
+//! * explicit calls to `add`
+//! * clap flags values
+//! * config file parameters
+//! * environment variables
+//! * default parameters
+//!
+//! # Caching
+//!
+//! Enable caching and you will gain a x4 speed-up. The caching is
+//! only `thread safe`, if you use a global instance. When you
+//! instantiagte a global `viperus` structure, it is guarded with an
+//! arc mutex.
+//!
+//! # Features
+//!
+//! The crate may be adopted using cargo's "feature" semantic. The
+//! default enables (opt-in) all supported features:
+//!
+//! *  feature = "fmt-[format]" with [format] in
+//!              'clap, env, java-properties, json, toml, yaml'
+//! *  feature = "global" enabling the global tread safe configuration
+//! *  feature = "watch" enabling the automatic file reload (prerequisite: feature=global)
+//! *  feature = "cache" enabling caching
 #![warn(clippy::all)]
 #[macro_use]
 #[cfg(feature = "global")]
@@ -25,13 +64,16 @@ extern crate lazy_static;
 
 #[cfg(any(feature = "fmt-yaml", feature = "fmt-toml"))]
 extern crate serde;
+
 #[cfg(feature = "ftm-yaml")]
 extern crate serde_yaml;
+
 #[macro_use]
 extern crate log;
 
-mod adapter;
-mod map;
+pub mod adapter;
+pub mod map;
+
 pub use adapter::AdapterResult;
 pub use adapter::ConfigAdapter;
 
@@ -60,9 +102,7 @@ pub enum ViperusError {
 }
 impl Error for ViperusError {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
-        match &self {
-            _ => None,
-        }
+        None
     }
 }
 impl Display for ViperusError {
@@ -193,7 +233,7 @@ impl<'v> Viperus<'v> {
             if std::path::Path::new(name).exists() {
                 debug!("reloading  {} => {:?}", name, format);
 
-                self.load_file(name, format.clone())?;
+                self.load_file(name, *format)?;
             } else {
                 debug!("not exists  {} => {:?}", name, format);
             }
